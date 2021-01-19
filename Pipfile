@@ -6,10 +6,10 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
-sklearn = "*"
 matplotlib = "*"
 pandas = "*"
 numpy = "*"
+sklearn = "*"
 
 [dev-packages]
 
