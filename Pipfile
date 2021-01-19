@@ -9,7 +9,7 @@ gunicorn = "*"
 matplotlib = "*"
 pandas = "*"
 numpy = "*"
-sklearn = "*"
+scikit-learn = "*"
 
 [dev-packages]
 

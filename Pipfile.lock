@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b47e12b4f4112e55e674cc2618f735c2c29e7985fcaf445db45a143156d6a592"
+            "sha256": "fa0085c4135c3f1851cc8d485e5aba64ebe40f30aceafef2e1da211f2e9971da"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -331,7 +331,7 @@
                 "sha256:d819d625832fb2969911a243e009cfa135cb8ef1e150866e417d6e9d75290087",
                 "sha256:e534f5f3796db6781c87e9835dcd51b7854c8c5a379c9210b93605965c1941fd"
             ],
-            "markers": "python_version >= '3.6'",
+            "index": "pypi",
             "version": "==0.24.0"
         },
         "scipy": {
@@ -366,13 +366,6 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
-        },
-        "sklearn": {
-            "hashes": [
-                "sha256:e23001573aa194b834122d2b9562459bf5ae494a2d59ca6b8aa22c85a44c0e31"
-            ],
-            "index": "pypi",
-            "version": "==0.0"
         },
         "threadpoolctl": {
             "hashes": [
