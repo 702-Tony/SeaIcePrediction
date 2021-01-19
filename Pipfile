@@ -6,8 +6,13 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
+sklearn = "*"
+matplotlib = "*"
+pandas = "*"
+numpy = "*"
 
 [dev-packages]
+linear_regr = "*"
 
 [requires]
 python_version = "3.8"

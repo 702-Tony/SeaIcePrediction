@@ -1,14 +1,20 @@
-<head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-</head>
 <body>
+
+
+{% extends 'base.html' %}
+{%block content%}
 <div class="container">
-  <div class="container-fluid">
-    <h1 class="display-4">Sea Ice Prediction</h1>
-    <h4 class="lead">by Anthony Adams</h4>
-  </div>
-  <div class="container">
-    
-  </div>
+  <h5> pick a date to get a prediction</h5>
+  <form action="{{url_for("prediction")}}", method="POST">
+    <input type="date" name="predict_date" id="predict_date"/>
+    <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
 </div>
+<div class="container">
+  <h5>
+    This is where the prediction will show
+  </h5>
+
+  </div>
+{%endblock%}
 </body>
