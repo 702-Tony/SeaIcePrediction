@@ -23,6 +23,11 @@ def date_transformer(date_str):
     format = '%Y-%m-%d'
     new_date = datetime.strptime(date_str, format)
     return new_date
+def single_day_oy_getter(y, m, d):
+    # takes in month day and year vals
+    date_ = datetime(y, m, d)
+    day_delta = date_.timetuple().tm_yday
+    return day_delta
 
 def day_of_year_getter(date_vals):
     # takes in an object with a list stored in the values attribute
@@ -54,7 +59,6 @@ def day_of_year_add_subtract(date_str, _days):
     # takes in date string
     date_format = '%m-%d-%Y'
     current_date = datetime.strptime(date_str, date_format)
-
     rt_list = []
     plus_day = current_date + timedelta(days=_days)
     rt_list.append(plus_day.timetuple().tm_yday)
@@ -63,11 +67,12 @@ def day_of_year_add_subtract(date_str, _days):
     # returns a list with 0 = plus_day and 1 = minus_day
     return rt_list
 
-def get_add_subtract_days(date_str, _days):
-    # this will return a list of daysofyear
+def get_add_subtract_days(month_, day_, year_, _days):
+    # this will return a list of daysofyear for plotting and linear regression
     date_format = '%m-%d-%Y'
-    current_date = datetime.strptime(date_str, date_format)
+    current_date = datetime(year_,month_, day_)
     rt_list = []
+    # adds current_date
     rt_list.append(current_date.timetuple().tm_yday)
     for d in range(1, _days+1):
         rt_list.append((current_date + timedelta(days=d)).timetuple().tm_yday)
@@ -78,7 +83,7 @@ def get_prediction(month_, day_, year_):
     date_to_pred = str(month_).zfill(2)+"-"+str(day_).zfill(2)+"-"+str(year_)# '03-01-2022'
     day_to_predict = Dummy(date_to_pred)
     # list of day of the year values + or - 15 days
-    add_subtract_list = get_add_subtract_days(date_to_pred, 15)
+    add_subtract_list = get_add_subtract_days(month_, day_, year_, 15)
     df_data = DF_DATASET.loc[(DF_DATASET['dayofyear'].isin(add_subtract_list))]
     # this is will select days that are within the date range + or - 10 days
     X = df_data[['year','month','day','dayofyear']]
@@ -109,7 +114,7 @@ def get_prediction_plot(month_, day_, year_, extent_val):
     date_to_pred = str(month_).zfill(2)+"-"+str(day_).zfill(2)+"-"+str(year_)# '03-01-2022'
     day_to_predict = Dummy(date_to_pred)
     # list of day of the year values + or - 15 days
-    add_subtract_list = get_add_subtract_days(date_to_pred, 15)
+    add_subtract_list = get_add_subtract_days(month_, day_, year_, 15)
     df_data = DF_DATASET.loc[(DF_DATASET['dayofyear'].isin(add_subtract_list))]
     # this is will select days that are within the date range + or - 10 days
     X = df_data[['year','month','day','dayofyear']]
