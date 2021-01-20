@@ -1,8 +1,14 @@
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import io
+import base64
+
 from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+
 
 class Dummy:
     def __init__(self, _val):
@@ -67,6 +73,7 @@ def get_add_subtract_days(date_str, _days):
         rt_list.append((current_date + timedelta(days=d)).timetuple().tm_yday)
         rt_list.append((current_date - timedelta(days=d)).timetuple().tm_yday)
     return rt_list
+
 def get_prediction(month_, day_, year_):
     date_to_pred = str(month_).zfill(2)+"-"+str(day_).zfill(2)+"-"+str(year_)# '03-01-2022'
     day_to_predict = Dummy(date_to_pred)
@@ -77,8 +84,16 @@ def get_prediction(month_, day_, year_):
     X = df_data[['year','month','day','dayofyear']]
     n_y = df_data[['n_extent']]
     s_y = df_data[['s_extent']]
-    n_l_regr = LinearRegression(normalize=True).fit(X, n_y)
-    s_l_regr = LinearRegression(normalize=True).fit(X, s_y)
+    # North Model Creation and test
+    X_train, X_test, y_train, y_test = train_test_split(X, n_y, test_size=0.3, shuffle=True)
+    n_l_regr = LinearRegression(normalize=True).fit(X_train, y_train)
+    n_score = n_l_regr.score(X_test, y_test)
+
+    # South Model Creation and test
+    X_train, X_test, y_train, y_test = train_test_split(X, s_y, test_size=0.3, shuffle=True)
+    s_l_regr = LinearRegression(normalize=True).fit(X_train, y_train)
+    s_score = s_l_regr.score(X_test, y_test)
+
     # create an object for the prediction output
     _d = {'year': [int(year_)],
       'month': [int(month_)],
@@ -87,7 +102,7 @@ def get_prediction(month_, day_, year_):
     # pass that object for the prediction
     north = N_L_REGR.predict(pd.DataFrame(data=_d))
     south = S_L_REGR.predict(pd.DataFrame(data=_d))
-    return north, south
+    return north, south, n_score, s_score
 
 def get_prediction_plot(month_, day_, year_, extent_val):
     # the purpose of the function is to return a scatter plot dataset to be plotted as well as a prediction for the actual day
@@ -111,3 +126,18 @@ def get_prediction_plot(month_, day_, year_, extent_val):
     # pass that object for the prediction
     prediction = n_l_regr.predict(pd.DataFrame(data=_d))
     return X_test, y_test, pr, prediction
+
+def get_plots(_year,_month,_day):
+    n_plots = []
+    s_plots = []
+    for i in range(1, 13):
+        n_plots.append(list(get_prediction_plot(i, 1, 1902, 'n_extent')))
+        s_plots.append(list(get_prediction_plot(i, 1, 1902, 's_extent')))
+    for i in range(len(n_plots)):
+        X_test = n_plots[i][0]
+        y_test = n_plots[i][1]
+        pr = n_plots[i][2]
+        plt.scatter(X_test['dayofyear'], y_test['n_extent'], c='b', s=1, alpha=0.5, label='Actual'if i == 0 else "")
+        plt.scatter(X_test['dayofyear'], pr, c='r', s=1, alpha=0.5, label='Predicted'if i == 0 else "")
+    plt.legend()
+    plt.save_fig('./images/predict_001.png')

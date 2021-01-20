@@ -1,8 +1,18 @@
 <body>
 {% extends 'base.html' %}
+{% block header %}
+<h1 class="display-4">Getting prediction for :</h1>
+  <h1>{{result}}</h1>
+{% endblock %}
 {% block content %}
-  <h1>Getting prediction for : {{result}}</h1>
-  <h4>North : {{north[0][0]}}</h4>
-  <h4>South : {{south[0][0]}}</h4>
+  <h4>North : {{"{:.2f} %".format(north[0][0])}}</h4>
+  <p>Est. Score for North prediction model {{ "{:.3f} %".format(n_score*100) }}</p>
+  <h4>South : {{"{:.2f} %".format(south[0][0])}}</h4>
+  <p>Est. Score for South prediction model {{"{:.3f} %".format(s_score*100) }}</p>
+  <p>Extent unit are in 10<sup>6</sup> km</p>
+  <img src='{{ plot_ }}' />
+  <p>
+  <a href="{{url_for('home_view')}}">Try another prediction</a>
+
 {% endblock %}
 </body>
