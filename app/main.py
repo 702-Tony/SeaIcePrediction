@@ -35,6 +35,8 @@ def prediction():
         return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy)
 
 def get_p(_month, _day, _year):
+    # gets a prediction for the date passed in from the webpage
+    # and returns a png image encoded as a base64 string
     day_of_year = single_day_oy_getter(_year,_month, _day)
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
