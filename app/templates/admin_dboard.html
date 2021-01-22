@@ -3,13 +3,30 @@
   {% extends 'base.html' %}
   {% block header %}
   <div class="container">
-    <h1 class="display-6">Dashboard</h1>
+    <h1 class="display-4">Dashboard</h1>
+    <h3>Visualizations Below</h3>
   </div>
 
   {% endblock %}
 {% block content %}
   <div class="container">
-
+    <div class="container">
+      <p> This is a violin plot showing the extents plotted every five years. as you can see the extents dip after 2005 and 2010 and 2015 are drastically lower than the previous years<p>The Southern Extent seems to not be on the same downward trend as the northern hemisphere. Perhaps this is why the linear regression model is not as accurate for the southern as there doesnt seem to be much variation throughout the years</p>
+      <br>
+    <figure class="figure">
+      <img src='{{ viol }}' title='Extents' alt='Violin Plot showing the extents every five years for both north and south hemispheres'/>
+      <figcaption class="figure-caption text-center">Violin Plot</figcaption>
+    </figure>
+    <figure class="figure">
+      <img src='{{ line_p }}' title='Extents line plot' alt='Line plot showing the cyclical nature'/>
+      <figcaption class="figure-caption text-center">Violin Plot</figcaption>
+    </figure>
+    </div>
   </div>
 {% endblock %}
 </body>
+<!--
+DASHBOARD FEATURES
+
+
+  -->

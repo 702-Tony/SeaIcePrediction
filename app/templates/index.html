@@ -4,17 +4,11 @@
 {% extends 'base.html' %}
 {%block content%}
 <div class="container">
-  <h5> pick a date to get a prediction</h5>
+  <h5> Pick a date to get a prediction</h5>
   <form action="{{url_for("prediction")}}", method="POST">
     <input type="date" name="predict_date" id="predict_date"/>
     <button class="btn btn-primary" type="submit">Submit</button>
     </form>
 </div>
-<div class="container">
-  <h5>
-    This is where the prediction will show
-  </h5>
-
-  </div>
 {%endblock%}
 </body>

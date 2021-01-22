@@ -13,9 +13,13 @@ def home_view():
 @app.route("/dashboard")
 def dashboard_view():
     # create K Means Clustering and build visualizations
+    # uses df to create violing plots
+    viol = violin_plot(1980, 2015, 5)
+    # perhaps I can create a drop down for each val and create a plot on the fly
 
 
-    return render_template("admin_dboard.html")
+    line_p = get_line_plot()
+    return render_template("admin_dboard.html", viol=viol, line_p = line_p)
 # use K Nearest Neighbor
 @app.route("/prediction", methods=['POST','GET'])
 def prediction():
@@ -32,7 +36,8 @@ def prediction():
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_)
         png_img = get_p(month_, day_, year_) # get_pred_plots(month_, day_, year_)
-        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy)
+
+        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy, viol=viol)
 
 def get_p(_month, _day, _year):
     # gets a prediction for the date passed in from the webpage
@@ -63,10 +68,33 @@ def get_p(_month, _day, _year):
     axis.legend()
     pngImage = io.BytesIO()
     FigureCanvas(fig).print_png(pngImage)
-
     # Encode PNG image to base64 string
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
+    return pngImageB64String
+
+def violin_plot(start, end, rate):
+    # this will generate a violin plot using the df dataframe
+    # this dataframe is closes to the row data in that it does not have the
+    # extent data split between columns and allows for easier plotting
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    yr_list = []
+    # generate a list with the start and end dates to be plotted.
+    for i in range(start, end, rate):
+        yr_list.append(i)
+
+    df_1980 = df[df['year'].isin(yr_list)]
+
+    fig,ax = plt.subplots(figsize=(6,6))
+    sns.violinplot(x='year', y='extent', data=df_1980, hue='hemisphere', split=True)
+    canvas=FigureCanvas(fig)
+    png_img = io.BytesIO()
+    fig.savefig(png_img)
+    png_img.seek(0)
+
+    pngImageB64String = "data:image/png;base64,"
+    pngImageB64String += base64.b64encode(png_img.getvalue()).decode('utf8')
     return pngImageB64String
 
 def get_pred_plots(_month, _day, _year):
@@ -119,4 +147,26 @@ def get_pred_plots(_month, _day, _year):
     # Encode PNG image to base64 string
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
+    return pngImageB64String
+
+def get_line_plot():
+    # returns  a line plot of all of the dataset
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    # Red is north extent
+    fig, ax = plt.subplots(figsize=(8,6))
+    plt.plot(DF_DATASET['date'].index, DF_DATASET['n_extent'], c='lightcoral', label='North Extent')
+    # Blue is south extent
+    plt.plot(DF_DATASET['date'].index, DF_DATASET['s_extent'], c='slateblue', label='South Extent', markersize=3)
+    ax.set_xlabel('Days since 1978-10-26')
+    ax.set_ylabel('Extent')
+    plt.grid()
+
+    legend = ax.legend()
+    canvas=FigureCanvas(fig)
+    png_img = io.BytesIO()
+    fig.savefig(png_img)
+    png_img.seek(0)
+    pngImageB64String = "data:image/png;base64,"
+    pngImageB64String += base64.b64encode(png_img.getvalue()).decode('utf8')
     return pngImageB64String
