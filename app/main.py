@@ -36,8 +36,7 @@ def prediction():
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_)
         png_img = get_p(month_, day_, year_) # get_pred_plots(month_, day_, year_)
-
-        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy, viol=viol)
+        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy)
 
 def get_p(_month, _day, _year):
     # gets a prediction for the date passed in from the webpage
