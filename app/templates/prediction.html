@@ -11,10 +11,20 @@
   <h4>South : {{"{:.2f}".format(south[0][0])}}</h4>
   <p>Est. Score for South prediction model {{"{:.3f} %".format(s_score*100) }}</p>
   <p>Extent unit are in 10<sup>6</sup> km</p>
-  <img src='{{ plot_ }}' />
-  <img src='{{ viol }}' />
+  <div id='chart' class='chart'>
+
+    </div>
   <p>
   <a href="{{url_for('home_view')}}">Try another prediction</a>
-
+  <!-- D3.js - Data Driven Documents script for visualization-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <!-- Plotly.js Plotly script -->
+  <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
+  <script type="text/javascript">
+          var graphs = {{ plotly_img | safe }};
+          Plotly.plot('chart',graphs,{});
+  </script>
 {% endblock %}
+
 </body>
