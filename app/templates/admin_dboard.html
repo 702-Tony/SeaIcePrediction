@@ -14,6 +14,9 @@
       <p> This is a violin plot showing the extents plotted every five years. as you can see the extents dip after 2005 and 2010 and 2015 are drastically lower than the previous years<p>The Southern Extent seems to not be on the same downward trend as the northern hemisphere. Perhaps this is why the linear regression model is not as accurate for the southern as there doesnt seem to be much variation throughout the years</p>
       <br>
     <figure class="figure">
+      <div id='chart' class='chart'>
+
+        </div>
       <img src='{{ viol }}' title='Extents' alt='Violin Plot showing the extents every five years for both north and south hemispheres'/>
       <figcaption class="figure-caption text-center">Violin Plot</figcaption>
     </figure>
@@ -23,6 +26,15 @@
     </figure>
     </div>
   </div>
+  <!-- D3.js - Data Driven Documents script for visualization-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <!-- Plotly.js Plotly script -->
+  <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
+  <script type="text/javascript">
+          var graphs = {{ plotly_viol | safe }};
+          Plotly.plot('chart',graphs,{});
+  </script>
 {% endblock %}
 </body>
 <!--

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from app.linear_regr import *
+
 from app.data_vis import *
 
 app = Flask(__name__)
@@ -16,10 +16,10 @@ def dashboard_view():
     # uses df to create violing plots
     viol = violin_plot(1980, 2015, 5)
     # perhaps I can create a drop down for each val and create a plot on the fly
-
+    plotly_viol = plotly_violin_plot(1980,2015,5)
 
     line_p = get_line_plot()
-    return render_template("admin_dboard.html", viol=viol, line_p = line_p)
+    return render_template("admin_dboard.html", viol=viol, line_p = line_p, plotly_viol=plotly_viol)
 # use K Nearest Neighbor
 @app.route("/prediction", methods=['POST','GET'])
 def prediction():
@@ -36,8 +36,8 @@ def prediction():
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_)
         plotly_img = plotly_scatter_plot(month_,day_,year_)
-        png_img = get_p(month_, day_, year_) # get_pred_plots(month_, day_, year_)
-        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, plot_=png_img, doy=doy, plotly_img=plotly_img)
+        # png_img = get_p(month_, day_, year_) # get_pred_plots(month_, day_, year_)
+        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, doy=doy, plotly_img=plotly_img)
 
 def get_p(_month, _day, _year):
     # gets a prediction for the date passed in from the webpage
@@ -170,42 +170,3 @@ def get_line_plot():
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(png_img.getvalue()).decode('utf8')
     return pngImageB64String
-
-def plotly_scatter_plot(_month, _day, _year):
-
-    day_of_year = single_day_oy_getter(_year,_month,_day)
-    n_prediction = N_L_REGR.predict([[_year, _month, _day ,day_of_year]])
-    s_prediction = S_L_REGR.predict([[_year, _month, _day ,day_of_year]])
-    add_subtract_list = get_add_subtract_days(_month, _day, _year, 15)
-    df_data = DF_DATASET.loc[(DF_DATASET['dayofyear'].isin(add_subtract_list))]
-    X = df_data[['dayofyear']]
-    y_n = df_data[['n_extent']]
-    s_n = df_data[['s_extent']]
-    n_prediction = N_L_REGR.predict([[_year, _month, _day ,day_of_year]])
-    s_prediction = S_L_REGR.predict([[_year, _month, _day ,day_of_year]])
-
-    # hovertemplate =
-    # '<i>Price</i>: $%{y:.2f}'+
-    # '<br><b>X</b>: %{x}<br>'+
-    # '<b>%{text}</b>',
-    trace = go.Scatter(
-        x=df_data['dayofyear'],
-        y=df_data['n_extent'],
-        opacity=0.6,
-        hovertemplate ='<i>Extent</i>: %{y:.2f}'+
-        '<br><b>Day of Year</b>: %{x}<br>'+
-        '<b>%{text}</b>',
-        text=df_data['date'],
-        name="North")
-    trace2 = go.Scatter(x=df_data['dayofyear'], y=df_data['s_extent'], opacity=0.6,
-        hovertemplate='<i>Extent</i>: %{y:.2f}'+
-        '<br><b>Day of Year</b>: %{x}<br>'+
-        '<b>%{text}</b>',
-        text=df_data['date'],
-        name="South")
-    prediction = go.Scatter(x=[day_of_year], y=[n_prediction] )
-    # prediction_s = go.Scatter(x=day_of_year, y=s_prediction)
-    data = [trace, trace2, prediction] #, prediction_s]
-    graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-    # return  html.Div([dcc.Graph(figure=fig)])
-    return graph_json
