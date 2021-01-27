@@ -2,13 +2,14 @@ import json
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
+import app.helpers as hlp
 
-from app.linear_regr import *
+
 # creates a plotly scatter plot with historical and predicted data
-def plotly_scatter_plot(_month, _day, _year):
-    day_of_year = single_day_oy_getter(_year,_month,_day)
+def plotly_scatter_plot(_month, _day, _year, DF_DATASET, N_L_REGR, S_L_REGR):
+    day_of_year = hlp.single_day_oy_getter(_year,_month,_day)
     # get days to plot
-    add_subtract_list = get_add_subtract_days(_month, _day, _year, 15)
+    add_subtract_list = hlp.get_add_subtract_days(_month, _day, _year, 15)
     # get days from dataset for plot
     df_data = DF_DATASET.loc[(DF_DATASET['dayofyear'].isin(add_subtract_list))]
     X = df_data[['dayofyear']]
@@ -59,7 +60,7 @@ def plotly_scatter_plot(_month, _day, _year):
     graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_json
 # creates a violin plot to be used for the data visualizations
-def plotly_violin_plot(start, end, rate):
+def plotly_violin_plot(start, end, rate, df):
     yr_list = []
     # generate a list with the start and end dates to be plotted.
     for i in range(start, end, rate):
@@ -82,6 +83,43 @@ def plotly_violin_plot(start, end, rate):
     graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_json
 
+def get_prediction_plot(month_, day_, year_, extent_val):
+    # the purpose of the function is to return a scatter plot dataset to be plotted as well as a prediction for the actual day
+    date_to_pred = str(month_).zfill(2)+"-"+str(day_).zfill(2)+"-"+str(year_)# '03-01-2022'
+    day_to_predict = hlp.Dummy(date_to_pred)
+    # list of day of the year values + or - 15 days
+    add_subtract_list = hlp.get_add_subtract_days(month_, day_, year_, 15)
+    df_data = DF_DATASET.loc[(DF_DATASET['dayofyear'].isin(add_subtract_list))]
+    # this is will select days that are within the date range + or - 10 days
+    X = df_data[['year','month','day','dayofyear']]
+    y = df_data[[extent_val]]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True)
+    n_l_regr = LinearRegression(normalize=True).fit(X_train, y_train)
+    pr = n_l_regr.predict(X_test)
+    # create an object for the prediction output
+    _d = {'year': [year_],
+      'month': [month_],
+      'day' : [day_],
+     'dayofyear': hlp.day_of_year_getter(day_to_predict)[0]}
+    # pass that object for the prediction
+    prediction = n_l_regr.predict(pd.DataFrame(data=_d))
+    return X_test, y_test, pr, prediction
+
+# def get_plots(_year,_month,_day):
+#     n_plots = []
+#     s_plots = []
+#     for i in range(1, 13):
+#         n_plots.append(list(get_prediction_plot(i, 1, 1902, 'n_extent')))
+#         s_plots.append(list(get_prediction_plot(i, 1, 1902, 's_extent')))
+#     for i in range(len(n_plots)):
+#         X_test = n_plots[i][0]
+#         y_test = n_plots[i][1]
+#         pr = n_plots[i][2]
+#         plt.scatter(X_test['dayofyear'], y_test['n_extent'], c='b', s=1, alpha=0.5, label='Actual'if i == 0 else "")
+#         plt.scatter(X_test['dayofyear'], pr, c='r', s=1, alpha=0.5, label='Predicted'if i == 0 else "")
+#     plt.legend()
+#     plt.save_fig('./images/predict_001.png')
 # fig = go.Figure()
 #
 # fig.add_trace(go.Violin(x=df['day'][ df['smoker'] == 'Yes' ],
