@@ -14,20 +14,15 @@ def scale_data(DF_DATASET):
     return scaled_data
 def encode_labels(DF_DATASET, encode=True):
     # if encode is false, then undo the encoding
-    print('Before','##########'*5)
-    print(DF_DATASET.head())
     if encode == False:
-
         # unencode
-        print('unencoding')
         DF_DATASET['date'] = le.inverse_transform(DF_DATASET['date'])
     else : # else encode the labels
         # encode
-        print('encoding')
         le.fit(DF_DATASET['date'])
         DF_DATASET['date'] = le.transform(DF_DATASET['date'])
-    print('After','##########'*5)
-    print(DF_DATASET.head())
+    # print('After','##########'*5)
+    # print(DF_DATASET.head())
     return DF_DATASET
 
 def h_cluster_data(DF_DATASET, n_clusters=None):
@@ -46,11 +41,14 @@ def h_cluster_data(DF_DATASET, n_clusters=None):
 def k_cluster_data(DF_DATASET, n_clusters=None):
     # encode the labels
     DATASET = encode_labels(DF_DATASET, True)
-    # First Scale the Data
+    # Scale the Data
     scaled_data = scale_data(DF_DATASET)
     # instantiate the Clustering Model
     model = KMeans(n_clusters=n_clusters)
+    # fit and store the predictions
     clusters = model.fit_predict(scaled_data)
+    # add a new column with the cluster values
     DF_DATASET['cluster'] = clusters
+    # un encode the labels on the Dataframe
     DF_DATASET = encode_labels(DF_DATASET, False)
     return DF_DATASET, model

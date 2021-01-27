@@ -12,7 +12,8 @@ DF_DATASET, df = prep_data('app/dataset/seaice.csv')
 n_clusters = 4
 DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
 N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
-
+print('#######'*3,'DF_DATASET','#######'*3)
+print(DF_DATASET.head())
 
 
 @app.route("/", methods = ["GET","POST"])
@@ -45,9 +46,8 @@ def prediction():
         year_ = date_obj.year
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
-        plotly_img = plotly_scatter_plot(month_,day_,year_, DF_DATASET, N_L_REGR, S_L_REGR)
-        # png_img = get_p(month_, day_, year_) # get_pred_plots(month_, day_, year_)
-        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, doy=doy, plotly_img=plotly_img)
+        plotly_scatter = plotly_scatter_plot(month_,day_,year_, DF_DATASET, N_L_REGR, S_L_REGR)
+        return render_template('prediction.html', result=result, north=north, south=south, n_score=n_score, s_score=s_score, doy=doy, plotly_scatter=plotly_scatter)
 
 
 

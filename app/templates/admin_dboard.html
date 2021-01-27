@@ -26,7 +26,13 @@
   <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
   <script type="text/javascript">
           var graphs = {{ plotly_viol | safe }};
-          Plotly.plot('viol_chart',graphs,{});
+          var layout = {
+            // set the size of the layout for the plot
+            autosize: true,
+            width: 1100,
+            height: 700,
+          }
+          Plotly.newPlot('viol_chart',graphs,layout);
   </script>
 {% endblock %}
 </body>

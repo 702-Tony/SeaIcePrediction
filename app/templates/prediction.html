@@ -22,8 +22,13 @@
   <!-- Plotly.js Plotly script -->
   <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
   <script type="text/javascript">
-          var graphs = {{ plotly_img | safe }};
-          Plotly.plot('chart',graphs,{});
+          var graphs = {{ plotly_scatter | safe }};
+          var layout = {
+            autosize: true,
+            width: 1100,
+            height: 800,
+          }
+          Plotly.newPlot('chart',graphs,layout);
   </script>
 {% endblock %}
 
