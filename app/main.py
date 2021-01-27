@@ -4,10 +4,13 @@ from flask import Flask, render_template, request
 from app.data_vis import *
 from app.data_prep import prep_data
 from app.linear_regr import *
+from app.cluster import *
 
 app = Flask(__name__)
 # create DataFrame Objects
 DF_DATASET, df = prep_data('app/dataset/seaice.csv')
+n_clusters = 4
+DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
 N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
 
 
