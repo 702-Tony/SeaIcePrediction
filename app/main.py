@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 
 # local file imports
 from app.data_vis import *
-from app.data_prep import prep_data
+from app.data_prep import prep_data, get_avgs
 from app.linear_regr import *
 from app.cluster import *
 
@@ -12,8 +12,11 @@ DF_DATASET, df = prep_data('app/dataset/seaice.csv')
 n_clusters = 4
 DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
 N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
+avg_df = get_avgs(df)
 print('#######'*3,'DF_DATASET','#######'*3)
 print(DF_DATASET.head())
+print('#######'*3,'Averages By Month','#######'*3)
+print(avg_df.head())
 
 
 @app.route("/", methods = ["GET","POST"])

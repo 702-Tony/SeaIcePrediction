@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import app.helpers as hlp
 
 
@@ -29,6 +30,11 @@ def prep_data(source):
 
     DF_DATASET['dayofyear'] = hlp.day_of_year_getter(DF_DATASET['date'])
     return DF_DATASET, df
+
+def get_avgs(df):
+    # group rows by year and month and average the corresponding values
+    avg_df = df.groupby(['year','month','hemisphere']).agg([np.average])
+    return avg_df
 
 def prep_avg_dataset():
     # FIXME : Need to find the code to create a datafile with the csv data from df averaged out per month
