@@ -14,8 +14,12 @@ def day_of_year_getter(date_vals):
 
 def date_transformer(date_str):
     # this returns a date time obj
-    format = '%Y-%m-%d'
-    new_date = datetime.strptime(date_str, format)
+    new_date
+    try:
+        new_date = parse(date_str)
+    except:
+        format = '%Y-%m-%d'
+        new_date = datetime.strptime(date_str, format)
     return new_date
 
 def single_day_oy_getter(y, m, d):

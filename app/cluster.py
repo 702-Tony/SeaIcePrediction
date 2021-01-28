@@ -14,15 +14,28 @@ def scale_data(DF_DATASET):
     return scaled_data
 def encode_labels(DF_DATASET, encode=True):
     # if encode is false, then undo the encoding
-    if encode == False:
-        # unencode
-        DF_DATASET['date'] = le.inverse_transform(DF_DATASET['date'])
-    else : # else encode the labels
-        # encode
-        le.fit(DF_DATASET['date'])
-        DF_DATASET['date'] = le.transform(DF_DATASET['date'])
-    # print('After','##########'*5)
-    # print(DF_DATASET.head())
+    try:
+        if encode == False:
+            # unencode
+            DF_DATASET['date'] = le.inverse_transform(DF_DATASET['date'])
+        else : # else encode the labels
+            # encode
+            le.fit(DF_DATASET['date'])
+            DF_DATASET['date'] = le.transform(DF_DATASET['date'])
+        # print('After','##########'*5)
+        # print(DF_DATASET.head())
+    except:
+        # this means that the average dataframe has been passed in
+        # inelegant, but it works...
+        if encode == False:
+            # unencode
+            DF_DATASET['hemisphere'] = le.inverse_transform(DF_DATASET['hemisphere'])
+        else:  # else encode the labels
+            # encode
+            le.fit(DF_DATASET['hemisphere'])
+            DF_DATASET['hemisphere'] = le.transform(DF_DATASET['hemisphere'])
+        # print('After','##########'*5)
+        # print(DF_DATASET.head())
     return DF_DATASET
 
 def h_cluster_data(DF_DATASET, n_clusters=None):
