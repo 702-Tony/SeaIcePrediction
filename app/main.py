@@ -16,42 +16,54 @@ N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
 avg_df = get_avgs(df)
 avg_df, avg_kmeans = k_cluster_data(avg_df, n_clusters)
 
-print('#######'*3,'DF_DATASET','#######'*3)
+print('#######' * 3, 'DF_DATASET', '#######' * 3)
 print(DF_DATASET.head())
-print('#######'*3,'Averages By Month','#######'*3)
+print('#######' * 3, 'Averages By Month', '#######' * 3)
 print(avg_df.head())
 
 
-@app.route("/", methods = ["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def home_view():
     return render_template("index.html")
 
-@app.route("/dashboard", methods=['POST','GET'])
+
+@app.route("/data_analysis", methods=['POST', 'GET'])
 def dashboard_view():
     # create K Means Clustering and build visualizations
-    # uses df to create violing plots
+    # uses df to create violin plots
     # viol = violin_plot(1980, 2015, 5)
     # perhaps I can create a drop down for each val and create a plot on the fly
-    plotly_viol = plotly_violin_plot(1980,2015,5,df)
-    north_heatmap = plotly_heatmap(avg_df, 'north')
-    south_heatmap = plotly_heatmap(avg_df, 'south')
+    plotly_viol = plotly_violin_plot(1980, 2015, 5, df)
+    north_bar_plotly = plotly_bar_plots(df, 'north')
     scatter_plotly = plotly_kmeans_scatter(DF_DATASET)
     # line_p = get_line_plot()
-    line_p = 'LinePlotPlaceholder' # to be changed out with plotly line plot
+    # line_p = 'LinePlotPlaceholder'  # to be changed out with plotly line plot
     return render_template("admin_dboard.html",
-                           line_p = line_p,
+                           # line_p = line_p,
                            plotly_viol=plotly_viol,
+                           north_box_plotly=north_bar_plotly,
+                           scatter_plotly=scatter_plotly)
+
+
+@app.route("/average_analysis")
+def average_dash_view():
+    north_heatmap = plotly_heatmap(avg_df, 'north')
+    south_heatmap = plotly_heatmap(avg_df, 'south')
+    # This will also have the average data plotted out line plot style
+    # lineplot = plotly_line_plot(avg_df)
+    return render_template("admin_avg_dboard.html",
                            north_heatmap=north_heatmap,
                            south_heatmap=south_heatmap,
-                           scatter_plotly = scatter_plotly)
+                           )
 
-@app.route("/prediction", methods=['POST','GET'])
+
+@app.route("/prediction", methods=['POST', 'GET'])
 def prediction():
     if request.method == 'POST':
         # this is where you get the info from the date from index.html template
         # before loading the next template
         # as well as pass along the information
-        result=request.form.get('predict_date')
+        result = request.form.get('predict_date')
         # here is where I do my python work
         date_obj = datetime.now()
         try:
@@ -59,13 +71,12 @@ def prediction():
         except:
             date_obj = datetime.now()
             result = date_obj.strftime('%Y-%m-%d')
-        print(date_obj.month)
         month_ = date_obj.month
         day_ = date_obj.day
         year_ = date_obj.year
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
-        plotly_scatter = plotly_scatter_plot(month_,day_,year_, DF_DATASET, N_L_REGR, S_L_REGR)
+        plotly_scatter = plotly_scatter_plot(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
         return render_template('prediction.html',
                                result=result,
                                north=north,
@@ -74,4 +85,3 @@ def prediction():
                                s_score=s_score,
                                doy=doy,
                                plotly_scatter=plotly_scatter)
-

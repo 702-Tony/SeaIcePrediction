@@ -17,8 +17,11 @@
       <div id='viol_chart' class='chart'>
 
         </div>
-      <h1>Box Plot</h1>
-      <div id = 'north_box_plot' class='chart' >
+      <h1>Heatmap of Northern Extent Averages</h1>
+      <div id = 'pl_heat_nor' class='chart' >
+      </div>
+      <h1>Heatmap of Southern Extent Averages</h1>
+      <div id = 'pl_heat_sou' class='chart'>
       </div>
       <h1>Scatter Plot showing KMeans Clustering</h1>
       <div id='pl_scatter_k' class='chart'>
@@ -32,7 +35,8 @@
   <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
   <script type="text/javascript">
           var pl_viol = {{ plotly_viol | safe }};
-          var n_pl_bar = {{ north_bar_plotly | safe }};
+          var pl_heat_nor = {{ north_heatmap | safe }};
+          var pl_heat_sou = {{ south_heatmap | safe }};
           var pl_scatter_k = {{ scatter_plotly | safe }};
           var layout = {
             // set the size of the layout for the plot
@@ -41,8 +45,9 @@
             height: 700,
           }
           Plotly.newPlot('viol_chart',pl_viol,layout);
-          Plotly.newPlot('north_bar_plot',n_pl_bar, layout);
-          Plotly.newPlot('pl_scatter_k', pl_scatter_k, layout);
+          Plotly.newPlot('pl_heat_nor',pl_heat_nor, layout)
+          Plotly.newPlot('pl_heat_sou',pl_heat_sou, layout)
+          Plotly.newPlot('pl_scatter_k', pl_scatter_k, layout)
   </script>
 {% endblock %}
 </body>

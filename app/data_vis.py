@@ -125,3 +125,29 @@ def plotly_kmeans_scatter(DF_DATASET):
     return graph_json
 # I should consider plotting the averages at least
 # to make the page load faster
+def plotly_bar_plots(df, hemisphere):
+    # Now Plot the South
+    df_1980 = df[df['year'] == 1980]
+    df_1990 = df[df['year'] == 1990]
+    df_2000 = df[df['year'] == 2000]
+    df_2010 = df[df['year'] == 2010]
+    df_2018 = df[df['year'] == 2018]
+
+    y0 = df_1980[df_1980['hemisphere'] == hemisphere]  # np.random.randn(50) - 1
+    # y1 = df_1980[df_1980['hemisphere']=='south']# np.random.randn(50) + 1
+    y2 = df_1990[df_1990['hemisphere'] == hemisphere]
+    # y3 = df_1990[df_1990['hemisphere']=='south']
+    y4 = df_2000[df_2000['hemisphere'] == hemisphere]
+
+    y6 = df_2010[df_2010['hemisphere'] == hemisphere]
+
+    y7 = df_2018[df_2018['hemisphere'] == hemisphere]
+    hemisphere = hemisphere.capitalize()
+    trace1 = go.Box(y=y0['extent'], name='1980 '+ hemisphere)
+    trace2 = go.Box(y=y2['extent'], name='1990' + hemisphere)
+    trace3 = go.Box(y=y4['extent'], name='2000' + hemisphere)
+    trace4 = go.Box(y=y6['extent'], name='2010' + hemisphere)
+    trace5 = go.Box(y=y7['extent'], name='2018' + hemisphere)
+    data = [trace1, trace2, trace3, trace4, trace5]
+    graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    return graph_json
