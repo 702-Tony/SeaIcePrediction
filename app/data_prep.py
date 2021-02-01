@@ -8,13 +8,11 @@ def prep_data(source):
 
     # PREPARE DATASET
     df = pd.read_csv(source)
-
+    print('CSV Read')
     # rename columns
     df.columns = ['year', 'month','day', 'extent','missing','source_data','hemisphere']
-    print(df.columns)
-    # remove unnecessary columns
+    # remove unnecessary columns, i.e. source data
     df = df.drop(columns=['source_data'])
-
     # split the data frames
     df_n = df[df['hemisphere'] =='north'] # all north extents
     df_s = df[df['hemisphere'] =='south'] # all south extents
@@ -43,3 +41,35 @@ def get_avgs(df):
     # remove nulls if any
     avg_df.dropna()
     return avg_df
+
+def prep_bydoy(DF_DATASET):
+    # lets prep the list
+    year_list = {}
+    year_list_s = {}
+    # this puts each year into its own list in the year_list dict
+    for year in range(1979, 2015, 5):
+        item = DF_DATASET[DF_DATASET['year'] == year]
+        year_list[year] = {}
+        year_list_s[year] = {}
+        for dayofyear in range(1, 366):
+            n_it = item[item['dayofyear'] == dayofyear]
+
+            s_it_n = None
+            n_it_n = None
+            try:
+                n_it_n = n_it['n_extent'].values.item()
+            except:
+                n_it_n = None
+            try:
+                s_it_n = n_it['s_extent'].values.item()
+            except:
+                s_it_n = None
+            year_list[year][dayofyear] = n_it_n
+            year_list_s[year][dayofyear] = s_it_n
+
+    # output is 1979, 1980, etc
+    df_yls = pd.DataFrame(data=year_list_s).transpose()
+    df_yln = pd.DataFrame(data=year_list).transpose()
+
+
+    return df_yls, df_yln

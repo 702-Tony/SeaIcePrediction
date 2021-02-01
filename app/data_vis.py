@@ -1,7 +1,9 @@
 import json
+
+import numpy as np
 import plotly
-import plotly.plotly as py
 import plotly.graph_objs as go
+
 import app.helpers as hlp
 
 
@@ -101,53 +103,70 @@ def plotly_heatmap(avg_df, hemisphere):
     return graph_json
 
 def plotly_kmeans_scatter(DF_DATASET):
-    # this will plot the Dataset with the kmeans cluster
-    # maybe I should try to plot n_extent and s_extent to see
-    # if there are clusterings for that axis
-    X = DF_DATASET['n_extent']
-    Y = DF_DATASET['s_extent']
-    template_str = '<b>Northern</b>: %{y:.2f}' + '<br><b>Southern</b>: %{x:.2f}<br>' + '<b>Cluster</b>: %{text}'
-    scatter = go.Scatter(
-        x=X,
-        y=Y,
-        marker = dict(
-            color=DF_DATASET['cluster'],
-            colorscale='Viridis'
-        ),
-        opacity=0.6,
-        mode='markers',
-        hovertemplate= template_str,
-        text=DF_DATASET['cluster'],
-        name='Clusters'
+    # this will plot the Dataset with the kmeans cluster from data that was
+    # transformed so that each year was on an evenly matched 366 day year of values
+    tr_df = DF_DATASET.transpose()
+    tr_df.columns = tr_df.iloc[0]
+    tr_df.drop(['year'], inplace=True)
+    tr_df.reset_index(inplace=True)
+    tr_df.drop(columns=['index'], inplace=True)
+
+    charts = []
+    for i in range(1979, 2018):
+        X = tr_df[i].index[:-1]
+        Y = tr_df[i][:-1]
+        cluster = int(tr_df[i][366].item())
+        colrs = ['#0d0887', '#46039f', '#7201a8', '#9c179e']
+        charts.append(
+            go.Scatter(x=X,
+                       y=Y,
+                       marker=dict(
+                           color=colrs[cluster],
+                           # colorscale='Viridis'
+                       ),
+                       legendgroup=cluster,
+                       opacity=0.6,
+                       mode='lines',
+                       text=i,
+                       name=i
+
+                       )
         )
-    data = [scatter]
+    data = charts
     graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
     return graph_json
-# I should consider plotting the averages at least
-# to make the page load faster
-def plotly_bar_plots(df, hemisphere):
-    # Now Plot the South
-    df_1980 = df[df['year'] == 1980]
-    df_1990 = df[df['year'] == 1990]
-    df_2000 = df[df['year'] == 2000]
-    df_2010 = df[df['year'] == 2010]
-    df_2018 = df[df['year'] == 2018]
 
-    y0 = df_1980[df_1980['hemisphere'] == hemisphere]  # np.random.randn(50) - 1
-    # y1 = df_1980[df_1980['hemisphere']=='south']# np.random.randn(50) + 1
-    y2 = df_1990[df_1990['hemisphere'] == hemisphere]
-    # y3 = df_1990[df_1990['hemisphere']=='south']
-    y4 = df_2000[df_2000['hemisphere'] == hemisphere]
+# Create a dataframe with the DF_DATASET dataframe and averages made up from that
+def plotly_bar_plots(DF_DATASET, s):
+    df_year = DF_DATASET
+    df_year_agg = df_year.groupby(['year','month']).agg([np.average])
+    df_year_agg.index = df_year_agg.index.set_names(['year', 'month'])
+    # reset index to fill in vals
+    df_year_agg.reset_index(inplace=True)
+    # rename cols
+    df_year_agg.columns = ['year','month','dayavg','n_ext','n_miss','s_ext','s_miss','dayoyavg','cls']
+    df_year_agg.head()
 
-    y6 = df_2010[df_2010['hemisphere'] == hemisphere]
-
-    y7 = df_2018[df_2018['hemisphere'] == hemisphere]
-    hemisphere = hemisphere.capitalize()
-    trace1 = go.Box(y=y0['extent'], name='1980 '+ hemisphere)
-    trace2 = go.Box(y=y2['extent'], name='1990' + hemisphere)
-    trace3 = go.Box(y=y4['extent'], name='2000' + hemisphere)
-    trace4 = go.Box(y=y6['extent'], name='2010' + hemisphere)
-    trace5 = go.Box(y=y7['extent'], name='2018' + hemisphere)
-    data = [trace1, trace2, trace3, trace4, trace5]
-    graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-    return graph_json
+    years = [1980,1985,1990, 1995, 2000, 2005, 2010, 2015, 2018]
+    data = []
+    data2 = []
+    # bar plot of extent values for each month of each year
+    for year in years:
+        df_year = df_year_agg[df_year_agg['year']==year]
+        north = str(year) + ' North'
+        data.append(go.Bar(
+            y=df_year['n_ext'],
+            x=df_year['month'],
+            name=north
+        ))
+        south = str(year) + ' South'
+        data2.append(go.Bar(
+            y=df_year['s_ext'],
+            x=df_year['month'],
+            name=south
+        ))
+    data = go.Figure(data=data)
+    data2 = go.Figure(data=data2)
+    n_graph_json = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    s_graph_json = json.dumps(data2, cls=plotly.utils.PlotlyJSONEncoder)
+    return n_graph_json, s_graph_json

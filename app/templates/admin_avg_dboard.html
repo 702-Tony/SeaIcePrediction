@@ -11,20 +11,12 @@
 {% block content %}
   <div class="container">
     <div class="container">
-      <p> This is a violin plot showing the extents plotted every five years. as you can see the extents dip after 2005 and 2010 and 2015 are drastically lower than the previous years<p>The Southern Extent seems to not be on the same downward trend as the northern hemisphere. Perhaps this is why the linear regression model is not as accurate for the southern as there doesnt seem to be much variation throughout the years</p>
-      <br>
-    <figure class="figure">
-      <div id='viol_chart' class='chart'>
-
-        </div>
       <h1>Heatmap of Northern Extent Averages</h1>
       <div id = 'pl_heat_nor' class='chart' >
       </div>
       <h1>Heatmap of Southern Extent Averages</h1>
       <div id = 'pl_heat_sou' class='chart'>
       </div>
-      <h1>Scatter Plot showing KMeans Clustering</h1>
-      <div id='pl_scatter_k' class='chart'>
       </div>
     </div>
   </div>
@@ -34,20 +26,16 @@
   <!-- Plotly.js Plotly script -->
   <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
   <script type="text/javascript">
-          var pl_viol = {{ plotly_viol | safe }};
           var pl_heat_nor = {{ north_heatmap | safe }};
           var pl_heat_sou = {{ south_heatmap | safe }};
-          var pl_scatter_k = {{ scatter_plotly | safe }};
           var layout = {
             // set the size of the layout for the plot
             autosize: true,
             width: 1100,
             height: 700,
           }
-          Plotly.newPlot('viol_chart',pl_viol,layout);
           Plotly.newPlot('pl_heat_nor',pl_heat_nor, layout)
           Plotly.newPlot('pl_heat_sou',pl_heat_sou, layout)
-          Plotly.newPlot('pl_scatter_k', pl_scatter_k, layout)
   </script>
 {% endblock %}
 </body>

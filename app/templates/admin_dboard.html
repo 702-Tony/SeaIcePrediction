@@ -17,10 +17,18 @@
       <div id='viol_chart' class='chart'>
 
         </div>
-      <h1>Box Plot</h1>
-      <div id = 'north_box_plot' class='chart' >
+      <h1>Bar Plots</h1>
+      <h2>Northern</h2>
+      <div id = 'north_bar_plot' class='chart' >
+      </div>
+      <h2>Southern</h2>
+      <div id = 'south_bar_plot' class='chart' >
       </div>
       <h1>Scatter Plot showing KMeans Clustering</h1>
+      <p>Here is the Clustering makeup of the data as it applies to the sea ice data.
+      Click the years in the legend to toggle their respective groupings. The 70s, 80s and early
+      90s Data is where the readings get a little tricky to understand since they didnt have readings every day so
+      the missing data had to be filled in with the mean values of the other days in the dataset.</p>
       <div id='pl_scatter_k' class='chart'>
       </div>
     </div>
@@ -30,10 +38,14 @@
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <!-- Plotly.js Plotly script -->
   <script src="https://cdn.plot.ly/plotly-1.52.3.min.js" charset="utf-8"></script>
+
+
   <script type="text/javascript">
           var pl_viol = {{ plotly_viol | safe }};
           var n_pl_bar = {{ north_bar_plotly | safe }};
+          var s_pl_bar = {{ south_bar_plotly | safe }};
           var pl_scatter_k = {{ scatter_plotly | safe }};
+
           var layout = {
             // set the size of the layout for the plot
             autosize: true,
@@ -42,7 +54,9 @@
           }
           Plotly.newPlot('viol_chart',pl_viol,layout);
           Plotly.newPlot('north_bar_plot',n_pl_bar, layout);
+          Plotly.newPlot('south_bar_plot',s_pl_bar, layout);
           Plotly.newPlot('pl_scatter_k', pl_scatter_k, layout);
+
   </script>
 {% endblock %}
 </body>

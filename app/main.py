@@ -11,6 +11,7 @@ app = Flask(__name__)
 DF_DATASET, df = prep_data('app/dataset/seaice.csv')
 n_clusters = 4
 DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
+year_col_df_north, year_col_df_south, kmeans_n, kmeans_s = k_cluster_data2(DF_DATASET, n_clusters)
 N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
 # get Avgs
 avg_df = get_avgs(df)
@@ -29,28 +30,26 @@ def home_view():
 
 @app.route("/data_analysis", methods=['POST', 'GET'])
 def dashboard_view():
-    # create K Means Clustering and build visualizations
-    # uses df to create violin plots
-    # viol = violin_plot(1980, 2015, 5)
-    # perhaps I can create a drop down for each val and create a plot on the fly
+    # main dashboard view with collected visualizations of data from rawest data set.
+    # includes the kmeans plotly plot
     plotly_viol = plotly_violin_plot(1980, 2015, 5, df)
-    north_bar_plotly = plotly_bar_plots(df, 'north')
-    scatter_plotly = plotly_kmeans_scatter(DF_DATASET)
-    # line_p = get_line_plot()
-    # line_p = 'LinePlotPlaceholder'  # to be changed out with plotly line plot
+    north_bar_plotly, south_bar_plotly = plotly_bar_plots(DF_DATASET, 'north')
+    scatter_plotly = plotly_kmeans_scatter(year_col_df_north)
     return render_template("admin_dboard.html",
                            # line_p = line_p,
                            plotly_viol=plotly_viol,
-                           north_box_plotly=north_bar_plotly,
-                           scatter_plotly=scatter_plotly)
+                           north_bar_plotly=north_bar_plotly,
+                           south_bar_plotly=south_bar_plotly,
+                           scatter_plotly=scatter_plotly,
+                           )
 
 
 @app.route("/average_analysis")
 def average_dash_view():
+    # this view will have the data from the dataset that has
+    # been transformed from the original and averaged out for each month.
     north_heatmap = plotly_heatmap(avg_df, 'north')
     south_heatmap = plotly_heatmap(avg_df, 'south')
-    # This will also have the average data plotted out line plot style
-    # lineplot = plotly_line_plot(avg_df)
     return render_template("admin_avg_dboard.html",
                            north_heatmap=north_heatmap,
                            south_heatmap=south_heatmap,
@@ -64,8 +63,7 @@ def prediction():
         # before loading the next template
         # as well as pass along the information
         result = request.form.get('predict_date')
-        # here is where I do my python work
-        date_obj = datetime.now()
+        date_obj = None
         try:
             date_obj = date_transformer(result)  # returns a datetime obj
         except:
@@ -84,4 +82,5 @@ def prediction():
                                n_score=n_score,
                                s_score=s_score,
                                doy=doy,
-                               plotly_scatter=plotly_scatter)
+                               plotly_scatter=plotly_scatter
+                               )
