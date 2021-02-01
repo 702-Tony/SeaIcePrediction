@@ -110,8 +110,7 @@ def k_cluster_data2(DF_DATASET, n_clusters=None):
     # set column names on dataframes
     df_yln.columns = column_names
     df_yls.columns = column_names
-    # Now lets impute the columns
-
+    # Now impute the columns
     # This will fill in any NaN vals with the mean value from the column
     imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
     # fills the missing values
@@ -123,7 +122,6 @@ def k_cluster_data2(DF_DATASET, n_clusters=None):
     # reset the column names
     df_yln.columns = column_names
     df_yls.columns = column_names
-
     # Now for the Kmeans for the north...
     kmean_n = KMeans(n_clusters=n_clusters)
     kmean_n.fit(df_yln)
