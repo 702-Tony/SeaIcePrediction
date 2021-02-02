@@ -27,6 +27,7 @@ def prep_data(source):
     # create dayof the year column
 
     DF_DATASET['dayofyear'] = hlp.day_of_year_getter(DF_DATASET['date'])
+    print('Data Prepped Successfully')
     return DF_DATASET, df
 
 def get_avgs(df):
@@ -40,6 +41,7 @@ def get_avgs(df):
     avg_df.columns = ['year', 'month', 'hemisphere', 'dayavg', 'extentavg', 'missingavg']
     # remove nulls if any
     avg_df.dropna()
+    print('Average DataFrame Created')
     return avg_df
 
 def prep_bydoy(DF_DATASET):
@@ -70,6 +72,6 @@ def prep_bydoy(DF_DATASET):
     # output is 1979, 1980, etc
     df_yls = pd.DataFrame(data=year_list_s).transpose()
     df_yln = pd.DataFrame(data=year_list).transpose()
-
+    
 
     return df_yls, df_yln

@@ -5,6 +5,7 @@ from app.data_vis import *
 from app.data_prep import prep_data, get_avgs
 from app.linear_regr import *
 from app.cluster import *
+from app.helpers import date_transformer
 
 app = Flask(__name__)
 # create DataFrame Objects
@@ -63,10 +64,13 @@ def prediction():
         # before loading the next template
         # as well as pass along the information
         result = request.form.get('predict_date')
+        #ORIGINAL
         date_obj = None
         try:
+            # parse date
             date_obj = date_transformer(result)  # returns a datetime obj
         except:
+            # if that fails then the prediction runs for today
             date_obj = datetime.now()
             result = date_obj.strftime('%Y-%m-%d')
         month_ = date_obj.month
@@ -74,6 +78,11 @@ def prediction():
         year_ = date_obj.year
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
+        print('Prediction queried at', datetime.now())
+        print('north prediction for ', month_,'-', day_,'-', year_,' : ', north[0][0])
+        print('north score : ', n_score)
+        print('south prediction for ', month_,'-', day_,'-', year_,' : ', south[0][0])
+        print('south score : ', s_score)
         plotly_scatter = plotly_scatter_plot(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
         return render_template('prediction.html',
                                result=result,

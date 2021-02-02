@@ -17,7 +17,7 @@ def get_linear_pred(DF_DATASET):
     X = DF_DATASET[['year','month','day','dayofyear']]
     n_y = DF_DATASET[['n_extent']]
     s_y = DF_DATASET[['s_extent']]
-
+    
     N_L_REGR = LinearRegression(normalize=True).fit(X, n_y)
     S_L_REGR = LinearRegression(normalize=True).fit(X, s_y)
     return N_L_REGR, S_L_REGR
