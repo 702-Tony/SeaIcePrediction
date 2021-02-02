@@ -21,3 +21,6 @@ Thumbs.db
 ###################
 instance/
 .webassets-cache
+
+# Jupyter Notebooks #
+.ipynb_checkpoints/
