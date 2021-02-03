@@ -3,36 +3,35 @@ import numpy as np
 import app.helpers as hlp
 
 
-
 def prep_data(source):
-
     # PREPARE DATASET
     df = pd.read_csv(source)
     print('CSV Read')
     # rename columns
-    df.columns = ['year', 'month','day', 'extent','missing','source_data','hemisphere']
+    df.columns = ['year', 'month', 'day', 'extent', 'missing', 'source_data', 'hemisphere']
     # remove unnecessary columns, i.e. source data
     df = df.drop(columns=['source_data'])
     # split the data frames
-    df_n = df[df['hemisphere'] =='north'] # all north extents
-    df_s = df[df['hemisphere'] =='south'] # all south extents
+    df_n = df[df['hemisphere'] == 'north']  # all north extents
+    df_s = df[df['hemisphere'] == 'south']  # all south extents
     # merge the dataframes together
-    df_n.columns = ['year','month','day','n_extent','n_missing', 'df_n']
-    df_s.columns = ['year','month','day','s_extent','s_missing', 'df_s']
+    df_n.columns = ['year', 'month', 'day', 'n_extent', 'n_missing', 'df_n']
+    df_s.columns = ['year', 'month', 'day', 's_extent', 's_missing', 'df_s']
     DF_DATASET = df_n.merge(df_s)
     DF_DATASET = DF_DATASET.drop(columns=['df_n', 'df_s'])
     # Now add a column with the date string
-    DF_DATASET['date'] = df[['month','day','year']].astype(str).agg('-'.join, axis=1)
-    df['date'] = df[['month','day','year']].astype(str).agg('-'.join, axis=1)
+    DF_DATASET['date'] = df[['month', 'day', 'year']].astype(str).agg('-'.join, axis=1)
+    df['date'] = df[['month', 'day', 'year']].astype(str).agg('-'.join, axis=1)
     # create dayof the year column
 
     DF_DATASET['dayofyear'] = hlp.day_of_year_getter(DF_DATASET['date'])
     print('Data Prepped Successfully')
     return DF_DATASET, df
 
+
 def get_avgs(df):
     # group rows by year and month and average the corresponding values
-    avg_df = df.groupby(['year','month','hemisphere']).agg([np.average])
+    avg_df = df.groupby(['year', 'month', 'hemisphere']).agg([np.average])
     # set index
     avg_df.index = avg_df.index.set_names(['year', 'month', 'hemisphere'])
     # reset index to fill in vals
@@ -43,6 +42,7 @@ def get_avgs(df):
     avg_df.dropna()
     print('Average DataFrame Created')
     return avg_df
+
 
 def prep_bydoy(DF_DATASET):
     # lets prep the list
@@ -72,6 +72,5 @@ def prep_bydoy(DF_DATASET):
     # output is 1979, 1980, etc
     df_yls = pd.DataFrame(data=year_list_s).transpose()
     df_yln = pd.DataFrame(data=year_list).transpose()
-    
 
     return df_yls, df_yln

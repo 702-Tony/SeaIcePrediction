@@ -37,7 +37,6 @@ def dashboard_view():
     north_bar_plotly, south_bar_plotly = plotly_bar_plots(DF_DATASET, 'north')
     scatter_plotly = plotly_kmeans_scatter(year_col_df_north)
     return render_template("admin_dboard.html",
-                           # line_p = line_p,
                            plotly_viol=plotly_viol,
                            north_bar_plotly=north_bar_plotly,
                            south_bar_plotly=south_bar_plotly,
@@ -64,7 +63,7 @@ def prediction():
         # before loading the next template
         # as well as pass along the information
         result = request.form.get('predict_date')
-        #ORIGINAL
+        # ORIGINAL
         date_obj = None
         try:
             # parse date
@@ -79,9 +78,9 @@ def prediction():
         doy = date_obj.timetuple().tm_yday
         north, south, n_score, s_score = get_prediction(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
         print('Prediction queried at', datetime.now())
-        print('north prediction for ', month_,'-', day_,'-', year_,' : ', north[0][0])
+        print('north prediction for ', month_, '-', day_, '-', year_, ' : ', north[0][0])
         print('north score : ', n_score)
-        print('south prediction for ', month_,'-', day_,'-', year_,' : ', south[0][0])
+        print('south prediction for ', month_, '-', day_, '-', year_, ' : ', south[0][0])
         print('south score : ', s_score)
         plotly_scatter = plotly_scatter_plot(month_, day_, year_, DF_DATASET, N_L_REGR, S_L_REGR)
         return render_template('prediction.html',

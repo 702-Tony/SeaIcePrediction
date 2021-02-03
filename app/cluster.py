@@ -10,18 +10,22 @@ from pandas import DataFrame
 import numpy as np
 
 le = LabelEncoder()
+
+
 def scale_data(DF_DATASET):
     scaler = StandardScaler()
     scaler.fit(DF_DATASET)
     scaled_data = scaler.transform(DF_DATASET)
     return scaled_data
+
+
 def encode_labels(DF_DATASET, encode=True):
     # if encode is false, then undo the encoding
     try:
-        if encode == False:
+        if not encode:
             # unencode
             DF_DATASET['date'] = le.inverse_transform(DF_DATASET['date'])
-        else : # else encode the labels
+        else:  # else encode the labels
             # encode
             le.fit(DF_DATASET['date'])
             DF_DATASET['date'] = le.transform(DF_DATASET['date'])
@@ -37,18 +41,20 @@ def encode_labels(DF_DATASET, encode=True):
             DF_DATASET['hemisphere'] = le.transform(DF_DATASET['hemisphere'])
     return DF_DATASET
 
+
 def h_cluster_data(DF_DATASET, n_clusters=None):
     # encode the labels
     DATASET = encode_labels(DF_DATASET, True)
     # Scale the Data
     scaled_data = scale_data(DF_DATASET)
     # instantiate the Clustering Model
-    model = AgglomerativeClustering(distance_threshold=0, n_clusters = n_clusters)
+    model = AgglomerativeClustering(distance_threshold=0, n_clusters=n_clusters)
     # Fit and transform the data
     clusters = model.fit_predict(scaled_data)
     DF_DATASET['cluster'] = clusters
     DF_DATASET = encode_labels(DF_DATASET, False)
     return DF_DATASET
+
 
 def k_cluster_data(DF_DATASET, n_clusters=None):
     # encode the labels
@@ -64,6 +70,7 @@ def k_cluster_data(DF_DATASET, n_clusters=None):
     # un encode the labels on the Dataframe
     DF_DATASET = encode_labels(DF_DATASET, False)
     return DF_DATASET, model
+
 
 def k_cluster_data2(DF_DATASET, n_clusters=None):
     # lets prep the list
@@ -133,4 +140,4 @@ def k_cluster_data2(DF_DATASET, n_clusters=None):
     clusters = kmean_s.predict(df_yls)
     df_yls['clusters'] = clusters
     # return both data frames with clusters as well as kmeans
-    return df_yln, df_yls ,kmean_n, kmean_s
+    return df_yln, df_yls, kmean_n, kmean_s

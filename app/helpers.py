@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+
 from dateutil.parser import parse
-import pandas as pd
+
+
 def day_of_year_getter(date_vals):
     # takes in an object with a list stored in the values attribute
     str_list = date_vals.values
@@ -13,16 +15,19 @@ def day_of_year_getter(date_vals):
         rt_list.append(day_delta)
     return rt_list
 
+
 def date_transformer(date_str):
     # parses string to create date obj
     new_date = parse(date_str)
     return new_date
+
 
 def single_day_oy_getter(y, m, d):
     # takes in month day and year vals
     date_ = datetime(y, m, d)
     day_delta = date_.timetuple().tm_yday
     return day_delta
+
 
 def day_of_year_add_subtract(date_str, _days):
     # takes in date string
@@ -36,17 +41,17 @@ def day_of_year_add_subtract(date_str, _days):
     # returns a list with 0 = plus_day and 1 = minus_day
     return rt_list
 
+
 def get_add_subtract_days(month_, day_, year_, _days):
     # this will return a list of daysofyear for plotting and linear regression
-    date_format = '%m-%d-%Y'
-    current_date = datetime(year_,month_, day_)
-    rt_list = []
+    current_date = datetime(year_, month_, day_)
+    rt_list = [current_date.timetuple().tm_yday]
     # adds current_date
-    rt_list.append(current_date.timetuple().tm_yday)
-    for d in range(1, _days+1):
+    for d in range(1, _days + 1):
         rt_list.append((current_date + timedelta(days=d)).timetuple().tm_yday)
         rt_list.append((current_date - timedelta(days=d)).timetuple().tm_yday)
     return rt_list
+
 
 class Dummy:
     def __init__(self, _val):
