@@ -11,7 +11,7 @@ app = Flask(__name__)
 # create DataFrame Objects
 DF_DATASET, df = prep_data('app/dataset/seaice.csv')
 n_clusters = 4
-DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
+# DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
 year_col_df_north, year_col_df_south, kmeans_n, kmeans_s = k_cluster_data2(DF_DATASET, n_clusters)
 N_L_REGR, S_L_REGR = get_linear_pred(DF_DATASET)
 # get Avgs
@@ -30,9 +30,10 @@ def home_view():
 
 
 @app.route("/data_analysis", methods=['POST', 'GET'])
-def dashboard_view():
+def dashboard_view(DF_DATASET=DF_DATASET):
     # main dashboard view with collected visualizations of data from rawest data set.
     # includes the kmeans plotly plot
+    DF_DATASET, kmeans_model = k_cluster_data(DF_DATASET, n_clusters)
     plotly_viol = plotly_violin_plot(1980, 2015, 5, df)
     north_bar_plotly, south_bar_plotly = plotly_bar_plots(DF_DATASET, 'north')
     scatter_plotly = plotly_kmeans_scatter(year_col_df_north)
